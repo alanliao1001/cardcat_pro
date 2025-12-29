@@ -23,4 +23,287 @@
         .tab-btn { white-space: nowrap; background: #fff; color: #555; border: 1px solid #ddd; padding: 8px 15px; }
         .tab-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); box-shadow: 0 2px 5px rgba(33,150,243,0.3); }
         
-        .rule-row { display: flex; gap: 12px; align-items: center; border
+        .rule-row { display: flex; gap: 12px; align-items: center; border-bottom: 1px solid #f5f5f5; padding: 15px 0; }
+        .rule-row:last-child { border-bottom: none; }
+        .rule-info { flex: 1; }
+        .rule-check { width: 18px; height: 18px; cursor: pointer; }
+        
+        #loading { position: fixed; top:0; left:0; right:0; bottom:0; background:rgba(255,255,255,0.95); display:flex; flex-direction:column; justify-content:center; align-items:center; z-index:999; font-weight: bold; }
+        .batch-area { background: #fffde7; padding: 18px; border-radius: 10px; border: 1px dashed #fbc02d; margin-top: 15px; }
+        
+        .sticky-footer { position: sticky; bottom: 20px; background: #e8f5e9; border: 2px solid var(--success); z-index: 100; }
+    </style>
+</head>
+<body>
+
+<div id="loading">🐱 卡片貓 Pro 正在連線 GitHub...</div>
+
+<div class="box">
+    <h2>
+        1. 選擇或新增卡片
+        <button class="add-btn" onclick="addNewCard()">➕ 新增卡片</button>
+    </h2>
+    <div id="tabsContainer" class="tab-scroll"></div>
+    
+    <div id="cardEditor" style="display:none;">
+        <div style="display:flex; justify-content:space-between; align-items: center; margin-bottom: 8px;">
+            <label><b>基本資訊設定：</b></label>
+            <button class="danger" onclick="deleteCurrentCard()" style="font-size:12px; padding:5px 10px;">🗑️ 刪除此張卡片</button>
+        </div>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
+            <input id="editName" placeholder="卡片名稱 (例: 台新 FlyGo)" oninput="updateCardMeta('name', this.value)">
+            <input id="editImg" placeholder="圖片網址 (例: https://...)" oninput="updateCardMeta('img', this.value)">
+        </div>
+    </div>
+</div>
+
+<div class="box" id="ruleBox" style="display:none;">
+    <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h2 style="border:none; margin:0;">2. 規則編輯與匯入</h2>
+        <span id="editModeLabel" style="color: var(--warning); font-weight: bold; display: none;">📝 正在編輯現有規則</span>
+    </div>
+    
+    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:15px;">
+        <input id="inShop" placeholder="店家 (例: UberEats)">
+        <input id="inRate" placeholder="回饋 (例: 5%)">
+        <input id="inScheme" placeholder="方案 (例: 需刷實體卡)">
+        <input id="inKey" placeholder="關鍵字 (例: 外送, 搜尋用)">
+    </div>
+    <button id="mainActionBtn" onclick="addOrUpdateRule()" style="width:100%; background: var(--success); font-size: 16px;">➕ 新增規則列表</button>
+    <button id="cancelEditBtn" onclick="resetInput()" style="width:100%; margin-top:8px; background:#888; display:none;">取消編輯</button>
+
+    <div class="batch-area">
+        <label><b>⚡ 批次快速匯入 (格式：店家,回饋,方案,關鍵字)</b></label>
+        <textarea id="batchInput" placeholder="直接貼上多行資料，例如：&#10;全家,10%,街口支付,超商&#10;中油,5%,直營站,加油" rows="3" style="margin-top:10px;"></textarea>
+        <button onclick="batchAddRules()" style="width:100%; background: var(--primary);">執行批次匯入</button>
+    </div>
+</div>
+
+<div class="box" id="listBox" style="display:none;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 10px;">
+        <h2 style="border:none; margin:0;">3. 規則清單</h2>
+        <button class="danger" id="multiDelBtn" onclick="deleteSelectedRules()" style="display:none; padding:6px 12px; font-size:13px;">🗑️ 刪除勾選項目</button>
+    </div>
+    <div id="ruleList"></div>
+</div>
+
+<div class="box sticky-footer">
+    <h2>4. 存檔與同步</h2>
+    <p style="font-size:13px; color:#2e7d32; margin: 5px 0;">點擊按鈕複製 JSON 後，回到 GitHub 覆蓋 data.json 內容即可完成同步。</p>
+    <textarea id="outputJson" style="width:100%; height:60px; font-family:monospace; background:rgba(255,255,255,0.5);" readonly></textarea>
+    <button onclick="copyAndGo()" style="background:#2e7d32; width:100%; font-size:18px; font-weight:bold; margin-top:10px;">一鍵複製並開啟 GitHub 🚀</button>
+</div>
+
+<script>
+    const DATA_URL = 'https://raw.githubusercontent.com/alanliao1001/cardcat_pro/refs/heads/main/data.json';
+    const GITHUB_EDIT_URL = 'https://github.com/alanliao1001/cardcat_pro/edit/main/data.json';
+
+    let appData = { cards: [] };
+    let currentTab = 0;
+    let editingIndex = -1;
+
+    async function init() {
+        try {
+            const res = await fetch(DATA_URL + '?t=' + new Date().getTime());
+            appData = await res.json();
+            if(!appData.cards) appData.cards = [];
+            renderTabs();
+            document.getElementById('loading').style.display = 'none';
+        } catch(e) { 
+            alert("讀取失敗，請確認 DATA_URL 是否正確！");
+            document.getElementById('loading').innerText = "❌ 讀取失敗，請檢查網址";
+        }
+    }
+
+    function renderTabs() {
+        const container = document.getElementById('tabsContainer');
+        container.innerHTML = '';
+        if(appData.cards.length === 0) {
+            container.innerHTML = '<span style="color:#999; padding:10px;">目前無卡片，請點擊右上方新增</span>';
+            hideEditor();
+            return;
+        }
+        if(currentTab >= appData.cards.length) currentTab = appData.cards.length - 1;
+
+        appData.cards.forEach((card, idx) => {
+            const btn = document.createElement('button');
+            btn.className = `tab-btn ${idx === currentTab ? 'active' : ''}`;
+            btn.innerText = card.name || "未命名";
+            btn.onclick = () => { currentTab = idx; resetInput(); renderTabs(); };
+            container.appendChild(btn);
+        });
+        showEditor();
+    }
+
+    function showEditor() {
+        const card = appData.cards[currentTab];
+        ['cardEditor', 'ruleBox', 'listBox'].forEach(id => document.getElementById(id).style.display = 'block');
+        document.getElementById('editName').value = card.name;
+        document.getElementById('editImg').value = card.img;
+        renderRules();
+        generateJson();
+    }
+
+    function hideEditor() {
+        ['cardEditor', 'ruleBox', 'listBox'].forEach(id => document.getElementById(id).style.display = 'none');
+        generateJson();
+    }
+
+    function updateCardMeta(key, val) {
+        appData.cards[currentTab][key] = val;
+        if(key === 'name') renderTabs();
+        generateJson();
+    }
+
+    function renderRules() {
+        const list = document.getElementById('ruleList');
+        list.innerHTML = '';
+        const rules = appData.cards[currentTab].rules || [];
+        
+        rules.forEach((r, i) => {
+            const row = document.createElement('div');
+            row.className = 'rule-row';
+            row.innerHTML = `
+                <input type="checkbox" class="rule-check" onchange="toggleMultiDelBtn()">
+                <div class="rule-info">
+                    <b style="font-size:16px;">${r.shop}</b> <span style="color:var(--danger); font-weight:bold; margin-left:8px;">${r.rate}</span>
+                    <br><small style="color:#777">方案：${r.scheme || '無'} | 關鍵字：${r.keyword || r.shop}</small>
+                </div>
+                <button class="edit-btn" onclick="prepareEdit(${i})">編輯</button>
+                <button class="danger" style="padding:5px 10px; font-size:12px;" onclick="delRule(${i})">✕</button>
+            `;
+            list.appendChild(row);
+        });
+        toggleMultiDelBtn();
+    }
+
+    function prepareEdit(index) {
+        editingIndex = index;
+        const rule = appData.cards[currentTab].rules[index];
+        document.getElementById('inShop').value = rule.shop;
+        document.getElementById('inRate').value = rule.rate;
+        document.getElementById('inScheme').value = rule.scheme;
+        document.getElementById('inKey').value = rule.keyword;
+        
+        document.getElementById('mainActionBtn').innerText = "💾 儲存修改內容";
+        document.getElementById('mainActionBtn').style.background = "var(--warning)";
+        document.getElementById('cancelEditBtn').style.display = "block";
+        document.getElementById('editModeLabel').style.display = "inline";
+        window.scrollTo({ top: document.getElementById('ruleBox').offsetTop - 20, behavior: 'smooth' });
+    }
+
+    function addOrUpdateRule() {
+        const shop = document.getElementById('inShop').value.trim();
+        const rate = document.getElementById('inRate').value.trim();
+        if(!shop || !rate) return alert("店家名稱與回饋比例為必填項！");
+
+        const newRule = {
+            shop: shop,
+            rate: rate,
+            scheme: document.getElementById('inScheme').value.trim(),
+            keyword: document.getElementById('inKey').value.trim() || shop
+        };
+
+        if(editingIndex > -1) {
+            appData.cards[currentTab].rules[editingIndex] = newRule;
+        } else {
+            appData.cards[currentTab].rules.unshift(newRule);
+        }
+
+        resetInput();
+        renderRules();
+        generateJson();
+    }
+
+    function batchAddRules() {
+        const raw = document.getElementById('batchInput').value.trim();
+        if(!raw) return;
+        const lines = raw.split('\n');
+        lines.forEach(line => {
+            const parts = line.split(/[,,，]/);
+            if(parts.length >= 2) {
+                const shop = parts[0].trim();
+                appData.cards[currentTab].rules.unshift({
+                    shop: shop,
+                    rate: parts[1] ? parts[1].trim() : "",
+                    scheme: parts[2] ? parts[2].trim() : "",
+                    keyword: (parts[3] && parts[3].trim()) ? parts[3].trim() : shop
+                });
+            }
+        });
+        document.getElementById('batchInput').value = '';
+        renderRules();
+        generateJson();
+    }
+
+    function deleteSelectedRules() {
+        const checks = document.querySelectorAll('.rule-check');
+        const toKeep = [];
+        let count = 0;
+        checks.forEach((ck, idx) => {
+            if(!ck.checked) toKeep.push(appData.cards[currentTab].rules[idx]);
+            else count++;
+        });
+        
+        if(confirm(`確定要刪除選中的 ${count} 條規則嗎？`)) {
+            appData.cards[currentTab].rules = toKeep;
+            renderRules();
+            generateJson();
+        }
+    }
+
+    function toggleMultiDelBtn() {
+        const anyChecked = Array.from(document.querySelectorAll('.rule-check')).some(c => c.checked);
+        document.getElementById('multiDelBtn').style.display = anyChecked ? 'block' : 'none';
+    }
+
+    function resetInput() {
+        editingIndex = -1;
+        ['inShop', 'inRate', 'inScheme', 'inKey'].forEach(id => document.getElementById(id).value = '');
+        document.getElementById('mainActionBtn').innerText = "➕ 新增規則列表";
+        document.getElementById('mainActionBtn').style.background = "var(--success)";
+        document.getElementById('cancelEditBtn').style.display = "none";
+        document.getElementById('editModeLabel').style.display = "none";
+    }
+
+    function addNewCard() {
+        const name = prompt("請輸入新卡片名稱：");
+        if(name) {
+            appData.cards.push({ id: "c" + Date.now(), name: name, img: "", rules: [] });
+            currentTab = appData.cards.length - 1;
+            renderTabs();
+        }
+    }
+
+    function deleteCurrentCard() {
+        if(confirm(`警告：確定要永久刪除「${appData.cards[currentTab].name}」嗎？`)) {
+            appData.cards.splice(currentTab, 1);
+            currentTab = 0;
+            renderTabs();
+        }
+    }
+
+    function delRule(i) {
+        if(confirm("確定刪除此規則？")) {
+            appData.cards[currentTab].rules.splice(i, 1);
+            renderRules();
+            generateJson();
+        }
+    }
+
+    function generateJson() {
+        document.getElementById('outputJson').value = JSON.stringify(appData, null, 2);
+    }
+
+    function copyAndGo() {
+        const txt = document.getElementById('outputJson');
+        txt.select();
+        document.execCommand('copy');
+        alert("JSON 已複製成功！\n接下來請在開啟的 GitHub 頁面中，全選貼上並 Commit。");
+        window.open(GITHUB_EDIT_URL, '_blank');
+    }
+
+    init();
+</script>
+</body>
+</html>
