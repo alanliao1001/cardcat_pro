@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>卡片貓 Pro</title>
+    <style>
+        :root { --primary: #000; --bg: #F2F2F7; --danger: #FF3B30; }
+        body { font-family: "Microsoft JhengHei", sans-serif; background: var(--bg); margin: 0; padding: 60px 0 0 0; color: #000; }
+        
+        /* 動態導航列 */
+        .top-nav { 
+            position: fixed; top: 0; left: 0; right: 0; height: 60px; background: #fff; 
+            display: flex; box-shadow: 0 1px 5px rgba(0,0,0,0.1); z-index: 100; 
+            overflow-x: auto; /* 支援橫向捲動 */
+            white-space: nowrap;
+        }
+        .nav-item { 
+            flex: 0 0 auto; padding: 0 20px; height: 100%; 
+            display: flex; align-items: center; justify-content: center; 
+            font-weight: bold; color: #999; cursor: pointer; 
+        }
+        .nav-item.active { color: #000; border-bottom: 3px solid #000; }
+        
+        .view-section { display: none; padding: 20px; max-width: 800px; margin: 0 auto; }
+        .view-section.active { display: block; animation: fadeIn 0.3s; }
+        
+        .search-container { text-align: center; margin-bottom: 20px; }
+        .search-input { width: 100%; padding: 15px; border-radius: 12px; border: none; box-shadow: 0 4px 10px rgba(0,0,0,0.05); font-size: 16px; outline: none; }
+        
+        .card-display { background: #fff; border-radius: 20px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); text-align: center; }
+        .card-img { max-width: 100%; height: auto; border-radius: 10px; margin-bottom: 15px; }
+        
+        .rule-table { width: 100%; border-collapse: collapse; margin-top: 15px; text-align: left; }
+        .rule-table th { color: #888; border-bottom: 2px solid #eee; padding: 8px; font-size: 14px; }
+        .rule-table td { border-bottom: 1px solid #f5f5f5; padding: 12px 8px; }
+        .rate-text { color: var(--danger); font-weight: bold; font-size: 18px; float: right; }
+        
+        .match-card { background: #fff; padding: 15px; border-radius: 12px; margin-bottom: 10px; border-left: 5px solid #000; }
+        .badge { background: #000; color: #fff; font-size: 12px; padding: 2px 6px; border-radius: 4px; }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+<nav class="top-nav" id="navContainer">
+    </nav>
+
+<div id="loading" style="text-align:center; padding:50px; color:#666;">資料連線中...</div>
+
+<div id="content-area" style="display:none;">
+    <div id="view-home" class="view-section active">
+        <div class="search-container">
+            <input type="text" id="searchInput" class="search-input" placeholder="🔍 搜尋店家..." oninput="doSearch()">
+        </div>
+        <div id="searchResults"></div>
+        <div id="defaultMsg" style="text-align:center; color:#aaa; margin-top:40px;">
+            <div style="font-size:40px;">🐱</div>
+            <p>卡片貓 Pro<br>為您找出最佳回饋</p>
+        </div>
+    </div>
+    
+    <div id="card-views-container"></div>
+</div>
+
+<script>
+    // ==========================================
+    // ⚠️ 請修改為你的 cardcat_pro 路徑
+    // ==========================================
+    const DATA_URL = 'https://raw.githubusercontent.com/alanliao1001/cardcat_pro/refs/heads/main/data.json';
+    // ==========================================
+
+    let appData = null;
+
+    async function init() {
+        try {
+            const res = await fetch(DATA_URL + '?t=' + new Date().getTime());
+            if(!res.ok) throw new Error("Network Error");
+            appData = await res.json();
+            buildDynamicUI(); // 這裡觸發動態建構
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('content-area').style.display = 'block';
+        } catch (e) {
+            document.getElementById('loading').innerHTML = "讀取失敗，請檢查網路或 URL 設定。<br>" + e.message;
+        }
+    }
+
+    // ★ 新功能：動態建構 UI
+    function buildDynamicUI() {
+        const nav = document.getElementById('navContainer');
+        const content = document.getElementById('card-views-container');
+        
+        // 1. 先建立首頁按鈕
+        nav.innerHTML = `<div class="nav-item active" onclick="switchTab('home', this)">首頁</div>`;
+        
+        // 2. 迴圈建立卡片按鈕與內容區
+        appData.cards.forEach((card, index) => {
+            // 新增導航按鈕
+            nav.innerHTML += `<div class="nav-item" onclick="switchTab('card${index}', this)">${card.name}</div>`;
+            
+            // 準備規則 HTML
+            let rulesHtml = `<div style="padding:30px; text-align:center; color:#999;">暫無規則</div>`;
+            if (card.rules.length > 0) {
+                rulesHtml = `<table class="rule-table"><thead><tr><th>店家/通路</th><th>回饋</th></tr></thead><tbody>`;
+                card.rules.forEach(r => {
+                    rulesHtml += `<tr><td><b>${r.shop}</b><br><span style="font-size:12px; color:#666">${r.scheme}</span></td><td><span class="rate-text">${r.rate}</span></td></tr>`;
+                });
+                rulesHtml += `</tbody></table>`;
+            }
+
+            // 新增卡片區塊 DIV
+            const viewDiv = document.createElement('div');
+            viewDiv.id = `view-card${index}`;
+            viewDiv.className = 'view-section';
+            const imgUrl = card.img || 'https://via.placeholder.com/600x360?text=No+Image';
+            
+            viewDiv.innerHTML = `
+                <div class="card-display">
+                    <img src="${imgUrl}" class="card-img" onerror="this.src='https://via.placeholder.com/600x360?text=Img+Error'">
+                    <h2 style="margin:0 0 10px 0;">${card.name}</h2>
+                    ${rulesHtml}
+                </div>`;
+            content.appendChild(viewDiv);
+        });
+    }
+
+    function switchTab(viewId, btn) {
+        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+        if(btn) btn.classList.add('active');
+        document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+        
+        const target = document.getElementById('view-' + viewId);
+        if(target) target.classList.add('active');
+        window.scrollTo(0,0);
+    }
+
+    function doSearch() {
+        const q = document.getElementById('searchInput').value.trim().toLowerCase();
+        const resDiv = document.getElementById('searchResults');
+        const defDiv = document.getElementById('defaultMsg');
+        
+        if (!q) { resDiv.innerHTML = ''; defDiv.style.display = 'block'; return; }
+        defDiv.style.display = 'none';
+        
+        let html = '';
+        appData.cards.forEach(card => {
+            card.rules.forEach(r => {
+                const txt = (r.shop + (r.keyword||"")).toLowerCase();
+                if (txt.includes(q)) {
+                    html += `<div class="match-card">
+                        <div class="match-header"><span class="badge">${card.name}</span> <span style="font-size:12px; color:#666">${r.scheme}</span></div>
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <span style="font-weight:bold; font-size:18px;">${r.shop}</span>
+                            <span style="color:var(--danger); font-weight:bold; font-size:20px;">${r.rate}</span>
+                        </div>
+                    </div>`;
+                }
+            });
+        });
+        resDiv.innerHTML = html || '<div style="text-align:center; padding:20px; color:#999;">找不到相關優惠 🐱</div>';
+    }
+
+    init();
+</script>
+</body>
+</html>
