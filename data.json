@@ -1,0 +1,16 @@
+{
+  "cards": [
+    {
+      "id": "c1",
+      "name": "台新銀行",
+      "img": "https://via.placeholder.com/600x360?text=Taishin",
+      "rules": []
+    },
+    {
+      "id": "c2",
+      "name": "國泰世華",
+      "img": "https://via.placeholder.com/600x360?text=Cathay",
+      "rules": []
+    }
+  ]
+}
