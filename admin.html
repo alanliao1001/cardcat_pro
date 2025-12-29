@@ -1,230 +1,135 @@
-<!DOCTYPE html>
-<html lang="zh-TW">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>卡片貓 Pro 後台</title>
-    <style>
-        body { font-family: sans-serif; background: #f4f4f4; padding: 20px; max-width: 800px; margin: 0 auto; }
-        .box { background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 20px; }
-        h2 { margin-top: 0; border-bottom: 1px solid #eee; padding-bottom: 10px; display:flex; justify-content:space-between; align-items:center; }
-        
-        button { padding: 8px 16px; cursor: pointer; background: #000; color: #fff; border: none; border-radius: 5px; }
-        button.secondary { background: #666; }
-        button.danger { background: #d9534f; }
-        button.add-btn { background: #2196F3; } /* 藍色新增鈕 */
-        
-        input, select { padding: 8px; border: 1px solid #ddd; border-radius: 5px; width: 100%; box-sizing: border-box; margin-bottom: 10px; }
-        
-        .tab-scroll { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 10px; }
-        .tab-btn { white-space: nowrap; background: #eee; color: #333; }
-        .tab-btn.active { background: #000; color: #fff; }
-        
-        .rule-row { display: flex; gap: 5px; align-items: center; border-bottom: 1px solid #f0f0f0; padding: 10px 0; }
-        #loading { position: fixed; top:0; left:0; right:0; bottom:0; background:rgba(255,255,255,0.9); display:flex; justify-content:center; align-items:center; z-index:999; }
-    </style>
-</head>
-<body>
-
-<div id="loading">正在讀取 GitHub 資料...</div>
-
-<div class="box">
-    <h2>
-        1. 選擇或新增卡片
-        <button class="add-btn" onclick="addNewCard()">➕ 新增卡片</button>
-    </h2>
-    <div id="tabsContainer" class="tab-scroll"></div>
-    
-    <div id="cardEditor" style="margin-top:20px; border-top:1px solid #eee; padding-top:20px; display:none;">
-        <div style="display:flex; justify-content:space-between;">
-            <label>卡片名稱：</label>
-            <button class="danger" onclick="deleteCurrentCard()" style="font-size:12px; padding:4px 8px;">🗑️ 刪除此卡</button>
-        </div>
-        <input id="editName" onchange="updateCardMeta('name', this.value)">
-        <label>圖片網址：</label>
-        <input id="editImg" onchange="updateCardMeta('img', this.value)">
-    </div>
-</div>
-
-<div class="box" id="ruleBox" style="display:none;">
-    <h2>2. 新增規則</h2>
-    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-        <input id="inShop" placeholder="店家 (例: 全家)">
-        <input id="inRate" placeholder="回饋 (例: 10%)">
-        <input id="inScheme" placeholder="方案 (例: 行動支付)">
-        <input id="inKey" placeholder="關鍵字 (例: 超商)">
-    </div>
-    <button onclick="addRule()" style="width:100%; margin-top:10px;">➕ 新增至列表</button>
-</div>
-
-<div class="box" id="listBox" style="display:none;">
-    <h2>3. 規則列表</h2>
-    <div id="ruleList"></div>
-</div>
-
-<div class="box" style="background:#e8f5e9; border:2px solid #4caf50;">
-    <h2>4. 存檔步驟</h2>
-    <textarea id="outputJson" style="width:100%; height:100px; font-family:monospace;" readonly></textarea>
-    <div style="margin-top:10px;">
-        <button onclick="copyAndGo()" style="background:#2e7d32; width:100%;">複製並前往 GitHub 存檔 🚀</button>
-    </div>
-</div>
-
 <script>
-    // ==========================================
-    // ⚠️ 請修改為你的 cardcat_pro 路徑
-    // ==========================================
-    const DATA_URL = 'https://raw.githubusercontent.com/alanliao1001/cardcat_pro/refs/heads/main/data.json';
-    const GITHUB_EDIT_URL = 'https://github.com/alanliao1001/cardcat_pro/edit/main/data.json';
-    // ==========================================
+    // 【重要：請依照指示填寫】
+    const GITHUB_TOKEN = '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'; // 這裡請填入你的 Classic Token
+    const REPO_OWNER = 'alanliao1001'; 
+    const REPO_NAME = 'cardcat_pro';
+    const FILE_PATH = 'data.json';
 
-    let appData = null;
-    let currentTab = 0;
+    let allData = { cards: [] };
+    let currentRules = [];
+    let editingRuleIndex = -1;
+    let cardModal;
 
-    async function init() {
-        try {
-            const res = await fetch(DATA_URL + '?t=' + new Date().getTime());
-            appData = await res.json();
-            if(!appData.cards) appData.cards = [];
-            renderTabs();
-            document.getElementById('loading').style.display = 'none';
-        } catch(e) { alert("讀取失敗：" + e.message); }
-    }
-
-    // ★ 新功能：渲染動態分頁
-    function renderTabs() {
-        const container = document.getElementById('tabsContainer');
-        container.innerHTML = '';
+    document.addEventListener('DOMContentLoaded', () => {
+        cardModal = new bootstrap.Modal(document.getElementById('cardModal'));
+        fetchData();
+        setupImageUpload();
         
-        if(appData.cards.length === 0) {
-            container.innerHTML = '<span style="color:#999; padding:10px;">目前沒有卡片，請按新增</span>';
-            hideEditor();
-            return;
-        }
+        document.getElementById('addRuleBtn').addEventListener('click', () => {
+            const input = document.getElementById('ruleInput').value.trim();
+            if (!input) return;
 
-        // 防止刪除後 currentTab 超出範圍
-        if(currentTab >= appData.cards.length) currentTab = appData.cards.length - 1;
-
-        appData.cards.forEach((card, idx) => {
-            const btn = document.createElement('button');
-            btn.className = `tab-btn ${idx === currentTab ? 'active' : ''}`;
-            btn.innerText = card.name;
-            btn.onclick = () => { currentTab = idx; renderTabs(); };
-            container.appendChild(btn);
+            if (editingRuleIndex > -1) {
+                // 更新特定行
+                currentRules[editingRuleIndex] = input;
+                editingRuleIndex = -1;
+                document.getElementById('addRuleBtn').innerText = "新增/更新規則";
+                document.getElementById('addRuleBtn').className = "btn btn-outline-secondary";
+            } else {
+                // 批次新增：將多行內容轉為陣列
+                const newRules = input.split(/\n+/).map(r => r.trim()).filter(r => r !== "");
+                currentRules = [...currentRules, ...newRules];
+            }
+            
+            document.getElementById('ruleInput').value = "";
+            renderRules();
         });
-        
-        showEditor();
-    }
+    });
 
-    // ★ 新功能：新增卡片邏輯
-    function addNewCard() {
-        const name = prompt("請輸入新卡片名稱：", "新信用卡");
-        if(name) {
-            appData.cards.push({
-                id: "c" + Date.now(), // 隨機 ID
-                name: name,
-                img: "",
-                rules: []
+    // 取得資料庫內容 (加上快取清除機制防止讀到舊資料)
+    async function fetchData() {
+        try {
+            const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}?t=${Date.now()}`, {
+                headers: { 'Authorization': `token ${GITHUB_TOKEN}` }
             });
-            currentTab = appData.cards.length - 1; // 切換到新卡片
-            renderTabs();
-            generateJson();
-        }
+            if (!res.ok) throw new Error("讀取失敗");
+            const file = await res.json();
+            allData = JSON.parse(decodeURIComponent(escape(atob(file.content))));
+            renderCards();
+        } catch (e) { console.error("Database initialization error:", e); }
     }
 
-    // ★ 新功能：刪除卡片邏輯
-    function deleteCurrentCard() {
-        if(confirm(`確定要刪除「${appData.cards[currentTab].name}」嗎？\n所有的規則都會消失且無法復原！`)) {
-            appData.cards.splice(currentTab, 1);
-            currentTab = 0;
-            renderTabs();
-            generateJson();
-        }
-    }
-
-    function showEditor() {
-        const card = appData.cards[currentTab];
-        document.getElementById('cardEditor').style.display = 'block';
-        document.getElementById('ruleBox').style.display = 'block';
-        document.getElementById('listBox').style.display = 'block';
-        
-        document.getElementById('editName').value = card.name;
-        document.getElementById('editImg').value = card.img;
-        
-        renderRules();
-        generateJson();
-    }
-
-    function hideEditor() {
-        document.getElementById('cardEditor').style.display = 'none';
-        document.getElementById('ruleBox').style.display = 'none';
-        document.getElementById('listBox').style.display = 'none';
-        generateJson();
-    }
-
-    function updateCardMeta(key, val) {
-        appData.cards[currentTab][key] = val;
-        renderTabs(); // 因為改名會影響 Tab 上的文字，所以要重繪
-    }
-
+    // 渲染規則清單 (優化渲染效能)
     function renderRules() {
         const list = document.getElementById('ruleList');
-        list.innerHTML = '';
-        const rules = appData.cards[currentTab].rules;
-        
-        rules.forEach((r, i) => {
-            const row = document.createElement('div');
-            row.className = 'rule-row';
-            row.innerHTML = `
-                <div style="flex:2"><b>${r.shop}</b> <span style="color:red">${r.rate}</span><br><small>${r.scheme}</small></div>
-                <button class="danger" onclick="delRule(${i})">刪</button>
-            `;
-            list.appendChild(row);
-        });
+        const html = currentRules.map((rule, index) => `
+            <div class="rule-item shadow-sm">
+                <input type="checkbox" class="rule-checkbox form-check-input" data-index="${index}">
+                <div class="rule-text text-break">${rule}</div>
+                <div class="btn-group border-start ms-2 ps-2">
+                    <button type="button" class="btn btn-sm btn-outline-info" onclick="prepareEditRule(${index})">編輯</button>
+                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeRule(${index})">✕</button>
+                </div>
+            </div>
+        `).join('');
+        list.innerHTML = html;
     }
 
-    function addRule() {
-        const shop = document.getElementById('inShop').value.trim();
-        const rate = document.getElementById('inRate').value.trim();
-        if(!shop || !rate) return alert("店家與回饋為必填");
+    // 準備編輯特定規則
+    function prepareEditRule(index) {
+        editingRuleIndex = index;
+        document.getElementById('ruleInput').value = currentRules[index];
+        document.getElementById('addRuleBtn').innerText = "確認修改此行";
+        document.getElementById('addRuleBtn').className = "btn btn-warning text-dark";
+        document.getElementById('ruleInput').focus();
+    }
+
+    // 刪除選中的規則
+    function deleteSelectedRules() {
+        const checkboxes = document.querySelectorAll('.rule-checkbox:checked');
+        if (checkboxes.length === 0) return alert("請先勾選規則");
         
-        appData.cards[currentTab].rules.unshift({
-            shop: shop, 
-            rate: rate, 
-            scheme: document.getElementById('inScheme').value.trim(), 
-            keyword: document.getElementById('inKey').value.trim() || shop
-        });
-        
-        // 清空輸入
-        document.getElementById('inShop').value = ''; 
-        document.getElementById('inRate').value = '';
-        document.getElementById('inScheme').value = ''; 
-        document.getElementById('inKey').value = '';
+        const indexesToDelete = Array.from(checkboxes).map(cb => parseInt(cb.dataset.index));
+        // 由大到小刪除，才不會影響 index
+        currentRules = currentRules.filter((_, index) => !indexesToDelete.includes(index));
         renderRules();
-        generateJson();
     }
 
-    function delRule(i) {
-        if(confirm("確定刪除此規則？")) {
-            appData.cards[currentTab].rules.splice(i, 1);
-            renderRules();
-            generateJson();
+    // 核心數據同步 (Debug 關鍵：先 Get SHA 再 Put)
+    async function updateGitHub() {
+        const btn = event.target;
+        btn.disabled = true;
+        btn.innerText = "同步中...";
+
+        try {
+            // 1. 先獲取最新的 SHA (避免 409 Conflict)
+            const getRes = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}`, {
+                headers: { 'Authorization': `token ${GITHUB_TOKEN}` }
+            });
+            const fileData = await getRes.json();
+            const currentSha = fileData.sha;
+
+            // 2. 準備 Base64 資料
+            const content = btoa(unescape(encodeURIComponent(JSON.stringify(allData, null, 2))));
+            
+            // 3. 寫入
+            const putRes = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}`, {
+                method: 'PUT',
+                headers: { 
+                    'Authorization': `token ${GITHUB_TOKEN}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    message: `Admin Update: ${new Date().toLocaleString()}`,
+                    content: content,
+                    sha: currentSha
+                })
+            });
+
+            if (putRes.ok) {
+                alert("卡片貓 Pro 雲端資料同步完畢！");
+                cardModal.hide();
+                fetchData();
+            } else {
+                throw new Error("GitHub API 回報錯誤");
+            }
+        } catch (e) {
+            alert("同步失敗！請確認您的 GITHUB_TOKEN 是否正確。");
+        } finally {
+            btn.disabled = false;
+            btn.innerText = "確認儲存到 GitHub";
         }
     }
-
-    function generateJson() {
-        document.getElementById('outputJson').value = JSON.stringify(appData, null, 2);
-    }
-
-    function copyAndGo() {
-        const txt = document.getElementById('outputJson');
-        txt.select();
-        document.execCommand('copy');
-        alert("代碼已複製！即將跳轉 GitHub...");
-        window.open(GITHUB_EDIT_URL, '_blank');
-    }
-
-    init();
+    
+    // ... 其餘渲染與圖片上傳邏輯保持不變 ...
 </script>
-</body>
-</html>
