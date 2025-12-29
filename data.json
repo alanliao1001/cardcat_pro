@@ -1815,601 +1815,601 @@
       "rules": [
         {
           "shop": "玉山Wallet電子支付",
-          "rate": "3.5%",
+          "rate": "4.5%",
           "scheme": "行動支付",
           "keyword": "玉山Wallet電子支付"
         },
         {
           "shop": "LINE Pay",
-          "rate": "3.5%",
+          "rate": "4.5%",
           "scheme": "行動支付",
           "keyword": "LINE Pay"
         },
         {
           "shop": "全支付",
-          "rate": "3.5%",
+          "rate": "4.5%",
           "scheme": "行動支付",
           "keyword": "全支付"
         },
         {
           "shop": "街口支付",
-          "rate": "3.5%",
+          "rate": "4.5%",
           "scheme": "行動支付",
           "keyword": "街口支付"
         },
         {
           "shop": "悠遊付",
-          "rate": "3.5%",
+          "rate": "4.5%",
           "scheme": "行動支付",
           "keyword": "悠遊付"
         },
         {
           "shop": "全盈+PAY",
-          "rate": "3.5%",
+          "rate": "4.5%",
           "scheme": "行動支付",
           "keyword": "全盈+PAY"
         },
         {
           "shop": "iPASS MONEY",
-          "rate": "3.5%",
+          "rate": "4.5%",
           "scheme": "行動支付",
           "keyword": "iPASS MONEY"
         },
         {
           "shop": "icash Pay",
-          "rate": "3.5%",
+          "rate": "4.5%",
           "scheme": "行動支付",
           "keyword": "icash Pay"
         },
         {
           "shop": "台灣中油(直營店)",
-          "rate": "3.5%",
+          "rate": "4.5%",
           "scheme": "加油交通",
           "keyword": "台灣中油(直營店)"
         },
         {
           "shop": "55688(台灣大車隊、機場接送)",
-          "rate": "3.5%",
+          "rate": "4.5%",
           "scheme": "加油交通",
           "keyword": "55688(台灣大車隊、機場接送)"
         },
         {
           "shop": "台鐵",
-          "rate": "3.5%",
+          "rate": "4.5%",
           "scheme": "加油交通",
           "keyword": "台鐵"
         },
         {
           "shop": "高鐵",
-          "rate": "3.5%",
+          "rate": "4.5%",
           "scheme": "加油交通",
           "keyword": "高鐵"
         },
         {
           "shop": "Uber",
-          "rate": "3.5%",
+          "rate": "4.5%",
           "scheme": "加油交通",
           "keyword": "Uber"
         },
         {
           "shop": "Yoxi",
-          "rate": "3.5%",
+          "rate": "4.5%",
           "scheme": "加油交通",
           "keyword": "Yoxi"
         },
         {
           "shop": "新光三越百貨",
-          "rate": "3.5%",
+          "rate": "4.5%",
           "scheme": "國內百貨",
           "keyword": "新光三越百貨"
         },
         {
           "shop": "遠東百貨集團",
-          "rate": "3.5%",
+          "rate": "4.5%",
           "scheme": "國內百貨",
           "keyword": "遠東百貨集團"
         },
         {
           "shop": "漢神百貨(不含漢神巨蛋)",
-          "rate": "3.5%",
+          "rate": "4.5%",
           "scheme": "國內百貨",
           "keyword": "漢神百貨(不含漢神巨蛋)"
         },
         {
           "shop": "微風百貨",
-          "rate": "3.5%",
+          "rate": "4.5%",
           "scheme": "國內百貨",
           "keyword": "微風百貨"
         },
         {
           "shop": "台北101",
-          "rate": "3.5%",
+          "rate": "4.5%",
           "scheme": "國內百貨",
           "keyword": "台北101"
         },
         {
           "shop": "華泰名品城",
-          "rate": "3.5%",
+          "rate": "4.5%",
           "scheme": "國內百貨",
           "keyword": "華泰名品城"
         },
         {
           "shop": "三井OUTLET",
-          "rate": "3.5%",
+          "rate": "4.5%",
           "scheme": "國內百貨",
           "keyword": "三井OUTLET"
         },
         {
           "shop": "京站",
-          "rate": "3.5%",
+          "rate": "4.5%",
           "scheme": "國內百貨",
           "keyword": "京站"
         },
         {
           "shop": "美麗華",
-          "rate": "3.5%",
+          "rate": "4.5%",
           "scheme": "國內百貨",
           "keyword": "美麗華"
         },
         {
           "shop": "誠品生活",
-          "rate": "3.5%",
+          "rate": "4.5%",
           "scheme": "國內百貨",
           "keyword": "誠品生活"
         },
         {
           "shop": "誠品書店(不含百貨店)",
-          "rate": "3.5%",
+          "rate": "4.5%",
           "scheme": "國內百貨",
           "keyword": "誠品書店(不含百貨店)"
         },
         {
           "shop": "誠品線上",
-          "rate": "3.5%",
+          "rate": "4.5%",
           "scheme": "國內百貨",
           "keyword": "誠品線上"
         },
         {
           "shop": "秀泰生活",
-          "rate": "3.5%",
+          "rate": "4.5%",
           "scheme": "國內百貨",
           "keyword": "秀泰生活"
         },
         {
           "shop": "LaLaport",
-          "rate": "3.5%",
+          "rate": "4.5%",
           "scheme": "國內百貨",
           "keyword": "LaLaport"
         },
         {
           "shop": "統領廣場",
-          "rate": "3.5%",
+          "rate": "4.5%",
           "scheme": "國內百貨",
           "keyword": "統領廣場"
         },
         {
           "shop": "統一時代百貨台北店(含DREAM PLAZA)",
-          "rate": "3.5%",
+          "rate": "4.5%",
           "scheme": "國內百貨",
           "keyword": "統一時代百貨台北店(含DREAM PLAZA)"
         },
         {
           "shop": "昇恆昌",
-          "rate": "3.5%",
+          "rate": "4.5%",
           "scheme": "國內百貨",
           "keyword": "昇恆昌"
         },
         {
           "shop": "采盟",
-          "rate": "3.5%",
+          "rate": "4.5%",
           "scheme": "國內百貨",
           "keyword": "采盟"
         },
         {
           "shop": "Uber Eats",
-          "rate": "3.5%",
+          "rate": "4.5%",
           "scheme": "餐飲美食",
-          "keyword": "Uber Eats"
+          "keyword": "外送"
         },
         {
           "shop": "foodpanda",
-          "rate": "3.5%",
+          "rate": "4.5%",
           "scheme": "餐飲美食",
-          "keyword": "foodpanda"
+          "keyword": "外送"
         },
         {
           "shop": "EZTABLE",
-          "rate": "3.5%",
+          "rate": "4.5%",
           "scheme": "餐飲美食",
           "keyword": "EZTABLE"
         },
         {
           "shop": "王品瘋Pay",
-          "rate": "3.5%",
+          "rate": "4.5%",
           "scheme": "餐飲美食",
           "keyword": "王品瘋Pay"
         },
         {
           "shop": "饗賓餐飲",
-          "rate": "3.5%",
+          "rate": "4.5%",
           "scheme": "餐飲美食",
           "keyword": "饗賓餐飲"
         },
         {
           "shop": "瓦城料理",
-          "rate": "3.5%",
+          "rate": "4.5%",
           "scheme": "餐飲美食",
           "keyword": "瓦城料理"
         },
         {
           "shop": "乾杯燒肉",
-          "rate": "3.5%",
+          "rate": "4.5%",
           "scheme": "餐飲美食",
           "keyword": "乾杯燒肉"
         },
         {
           "shop": "漢來美食",
-          "rate": "3.5%",
+          "rate": "4.5%",
           "scheme": "餐飲美食",
           "keyword": "漢來美食"
         },
         {
           "shop": "鼎王餐飲",
-          "rate": "3.5%",
+          "rate": "4.5%",
           "scheme": "餐飲美食",
           "keyword": "鼎王餐飲"
         },
         {
           "shop": "爭鮮餐飲",
-          "rate": "3.5%",
+          "rate": "4.5%",
           "scheme": "餐飲美食",
           "keyword": "爭鮮餐飲"
         },
         {
           "shop": "中華航空",
-          "rate": "3.5%",
+          "rate": "4.5%",
           "scheme": "航空旅遊",
           "keyword": "中華航空"
         },
         {
           "shop": "長榮航空",
-          "rate": "3.5%",
+          "rate": "4.5%",
           "scheme": "航空旅遊",
           "keyword": "長榮航空"
         },
         {
           "shop": "日本航空",
-          "rate": "3.5%",
+          "rate": "4.5%",
           "scheme": "航空旅遊",
           "keyword": "日本航空"
         },
         {
           "shop": "台灣虎航",
-          "rate": "3.5%",
+          "rate": "4.5%",
           "scheme": "航空旅遊",
           "keyword": "台灣虎航"
         },
         {
           "shop": "樂桃航空",
-          "rate": "3.5%",
+          "rate": "4.5%",
           "scheme": "航空旅遊",
           "keyword": "樂桃航空"
         },
         {
           "shop": "酷航",
-          "rate": "3.5%",
+          "rate": "4.5%",
           "scheme": "航空旅遊",
           "keyword": "酷航"
         },
         {
           "shop": "Trip.com",
-          "rate": "3.5%",
+          "rate": "4.5%",
           "scheme": "航空旅遊",
           "keyword": "Trip.com"
         },
         {
           "shop": "Booking.com",
-          "rate": "3.5%",
+          "rate": "4.5%",
           "scheme": "航空旅遊",
           "keyword": "Booking.com"
         },
         {
           "shop": "Hotels.com",
-          "rate": "3.5%",
+          "rate": "4.5%",
           "scheme": "航空旅遊",
           "keyword": "Hotels.com"
         },
         {
           "shop": "AsiaYo",
-          "rate": "3.5%",
+          "rate": "4.5%",
           "scheme": "航空旅遊",
           "keyword": "AsiaYo"
         },
         {
           "shop": "Expedia",
-          "rate": "3.5%",
+          "rate": "4.5%",
           "scheme": "航空旅遊",
           "keyword": "Expedia"
         },
         {
           "shop": "KKday",
-          "rate": "3.5%",
+          "rate": "4.5%",
           "scheme": "航空旅遊",
           "keyword": "KKday"
         },
         {
           "shop": "Klook",
-          "rate": "3.5%",
+          "rate": "4.5%",
           "scheme": "航空旅遊",
           "keyword": "Klook"
         },
         {
           "shop": "雄獅旅遊",
-          "rate": "3.5%",
+          "rate": "4.5%",
           "scheme": "航空旅遊",
           "keyword": "雄獅旅遊"
         },
         {
           "shop": "可樂旅遊",
-          "rate": "3.5%",
+          "rate": "4.5%",
           "scheme": "航空旅遊",
           "keyword": "可樂旅遊"
         },
         {
           "shop": "東南旅遊",
-          "rate": "3.5%",
+          "rate": "4.5%",
           "scheme": "航空旅遊",
           "keyword": "東南旅遊"
         },
         {
           "shop": "Agoda",
-          "rate": "3.5%",
+          "rate": "4.5%",
           "scheme": "航空旅遊",
           "keyword": "Agoda"
         },
         {
           "shop": "Apple直營店",
-          "rate": "3.5%",
+          "rate": "4.5%",
           "scheme": "精選商家",
           "keyword": "Apple直營店"
         },
         {
           "shop": "小米台灣",
-          "rate": "3.5%",
+          "rate": "4.5%",
           "scheme": "精選商家",
           "keyword": "小米台灣"
         },
         {
           "shop": "全國電子",
-          "rate": "3.5%",
+          "rate": "4.5%",
           "scheme": "精選商家",
           "keyword": "全國電子"
         },
         {
           "shop": "燦坤",
-          "rate": "3.5%",
+          "rate": "4.5%",
           "scheme": "精選商家",
           "keyword": "燦坤"
         },
         {
           "shop": "迪卡儂",
-          "rate": "3.5%",
+          "rate": "4.5%",
           "scheme": "精選商家",
           "keyword": "迪卡儂"
         },
         {
           "shop": "家樂福",
-          "rate": "3.5%",
+          "rate": "4.5%",
           "scheme": "生活採買",
           "keyword": "家樂福"
         },
         {
           "shop": "屈臣氏",
-          "rate": "3.5%",
+          "rate": "4.5%",
           "scheme": "生活採買",
           "keyword": "屈臣氏"
         },
         {
           "shop": "康是美",
-          "rate": "3.5%",
+          "rate": "4.5%",
           "scheme": "生活採買",
           "keyword": "康是美"
         },
         {
           "shop": "特力屋",
-          "rate": "3.5%",
+          "rate": "4.5%",
           "scheme": "生活採買",
           "keyword": "特力屋"
         },
         {
           "shop": "HOLA",
-          "rate": "3.5%",
+          "rate": "4.5%",
           "scheme": "生活採買",
           "keyword": "HOLA"
         },
         {
           "shop": "hoi好好生活",
-          "rate": "3.5%",
+          "rate": "4.5%",
           "scheme": "生活採買",
           "keyword": "hoi好好生活"
         },
         {
           "shop": "UNIQLO",
-          "rate": "3.5%",
+          "rate": "4.5%",
           "scheme": "生活採買",
           "keyword": "UNIQLO"
         },
         {
           "shop": "NET",
-          "rate": "3.5%",
+          "rate": "4.5%",
           "scheme": "生活採買",
           "keyword": "NET"
         },
         {
           "shop": "大樹藥局",
-          "rate": "3.5%",
+          "rate": "4.5%",
           "scheme": "生活採買",
           "keyword": "大樹藥局"
         },
         {
           "shop": "丁丁藥妝",
-          "rate": "3.5%",
+          "rate": "4.5%",
           "scheme": "生活採買",
           "keyword": "丁丁藥妝"
         },
         {
           "shop": "momo購物網",
-          "rate": "3.5%",
+          "rate": "4.5%",
           "scheme": "電商平台",
           "keyword": "momo購物網"
         },
         {
           "shop": "蝦皮購物",
-          "rate": "3.5%",
+          "rate": "4.5%",
           "scheme": "電商平台",
           "keyword": "蝦皮購物"
         },
         {
           "shop": "淘寶網",
-          "rate": "3.5%",
+          "rate": "4.5%",
           "scheme": "電商平台",
           "keyword": "淘寶網"
         },
         {
           "shop": "Coupang酷澎",
-          "rate": "3.5%",
+          "rate": "4.5%",
           "scheme": "電商平台",
           "keyword": "Coupang酷澎"
         },
         {
           "shop": "日本(實體)",
-          "rate": "3.5%",
+          "rate": "4.5%",
           "scheme": "國外實體",
           "keyword": "國外"
         },
         {
           "shop": "韓國(實體)",
-          "rate": "3.5%",
+          "rate": "4.5%",
           "scheme": "國外實體",
           "keyword": "國外"
         },
         {
           "shop": "泰國(實體)",
-          "rate": "3.5%",
+          "rate": "4.5%",
           "scheme": "國外實體",
           "keyword": "國外"
         },
         {
           "shop": "越南(實體)",
-          "rate": "3.5%",
+          "rate": "4.5%",
           "scheme": "國外實體",
           "keyword": "國外"
         },
         {
           "shop": "新加坡(實體)",
-          "rate": "3.5%",
+          "rate": "4.5%",
           "scheme": "國外實體",
           "keyword": "國外"
         },
         {
           "shop": "馬來西亞(實體)",
-          "rate": "3.5%",
+          "rate": "4.5%",
           "scheme": "國外實體",
           "keyword": "國外"
         },
         {
           "shop": "菲律賓(實體)",
-          "rate": "3.5%",
+          "rate": "4.5%",
           "scheme": "國外實體",
           "keyword": "國外"
         },
         {
           "shop": "中國(實體)",
-          "rate": "3.5%",
+          "rate": "4.5%",
           "scheme": "國外實體",
           "keyword": "國外"
         },
         {
           "shop": "香港(實體)",
-          "rate": "3.5%",
+          "rate": "4.5%",
           "scheme": "國外實體",
           "keyword": "國外"
         },
         {
           "shop": "澳門(實體)",
-          "rate": "3.5%",
+          "rate": "4.5%",
           "scheme": "國外實體",
           "keyword": "國外"
         },
         {
           "shop": "美國(實體)",
-          "rate": "3.5%",
+          "rate": "4.5%",
           "scheme": "國外實體",
           "keyword": "國外"
         },
         {
           "shop": "加拿大(實體)",
-          "rate": "3.5%",
+          "rate": "4.5%",
           "scheme": "國外實體",
           "keyword": "國外"
         },
         {
           "shop": "英國(實體)",
-          "rate": "3.5%",
+          "rate": "4.5%",
           "scheme": "國外實體",
           "keyword": "國外"
         },
         {
           "shop": "法國(實體)",
-          "rate": "3.5%",
+          "rate": "4.5%",
           "scheme": "國外實體",
           "keyword": "國外"
         },
         {
           "shop": "德國(實體)",
-          "rate": "3.5%",
+          "rate": "4.5%",
           "scheme": "國外實體",
           "keyword": "國外"
         },
         {
           "shop": "義大利(實體)",
-          "rate": "3.5%",
+          "rate": "4.5%",
           "scheme": "國外實體",
           "keyword": "國外"
         },
         {
           "shop": "澳洲(實體)",
-          "rate": "3.5%",
+          "rate": "4.5%",
           "scheme": "國外實體",
           "keyword": "國外"
         },
         {
           "shop": "玉山Wallet愛心捐款-單筆捐款",
-          "rate": "3.5%",
+          "rate": "4.5%",
           "scheme": "ESG消費",
           "keyword": "玉山Wallet愛心捐款-單筆捐款"
         },
         {
           "shop": "玉山Wallet愛心捐款-定期定額",
-          "rate": "3.5%",
+          "rate": "4.5%",
           "scheme": "ESG消費",
           "keyword": "玉山Wallet愛心捐款-定期定額"
         },
         {
           "shop": "特斯拉",
-          "rate": "3.5%",
+          "rate": "4.5%",
           "scheme": "ESG消費",
           "keyword": "特斯拉"
         },
         {
           "shop": "Gogoro電池資費",
-          "rate": "3.5%",
+          "rate": "4.5%",
           "scheme": "ESG消費",
           "keyword": "Gogoro電池資費"
         },
         {
           "shop": "YouBike 2.0",
-          "rate": "3.5%",
+          "rate": "4.5%",
           "scheme": "ESG消費",
           "keyword": "YouBike 2.0"
         }
