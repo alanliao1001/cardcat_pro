@@ -1823,7 +1823,7 @@
           "shop": "LINE Pay",
           "rate": "4.5%",
           "scheme": "行動支付",
-          "keyword": "LINE Pay"
+          "keyword": "咻_加碼"
         },
         {
           "shop": "全支付",
@@ -1841,13 +1841,13 @@
           "shop": "悠遊付",
           "rate": "4.5%",
           "scheme": "行動支付",
-          "keyword": "悠遊付"
+          "keyword": "心_加碼"
         },
         {
           "shop": "全盈+PAY",
           "rate": "4.5%",
           "scheme": "行動支付",
-          "keyword": "全盈+PAY"
+          "keyword": "咻_加碼"
         },
         {
           "shop": "iPASS MONEY",
@@ -1859,7 +1859,7 @@
           "shop": "icash Pay",
           "rate": "4.5%",
           "scheme": "行動支付",
-          "keyword": "icash Pay"
+          "keyword": "心_加碼"
         },
         {
           "shop": "台灣中油(直營店)",
@@ -1901,7 +1901,7 @@
           "shop": "新光三越百貨",
           "rate": "4.5%",
           "scheme": "國內百貨",
-          "keyword": "新光三越百貨"
+          "keyword": "心_加碼"
         },
         {
           "shop": "遠東百貨集團",
@@ -1991,7 +1991,7 @@
           "shop": "統一時代百貨台北店(含DREAM PLAZA)",
           "rate": "4.5%",
           "scheme": "國內百貨",
-          "keyword": "統一時代百貨台北店(含DREAM PLAZA)"
+          "keyword": "心_加碼"
         },
         {
           "shop": "昇恆昌",
@@ -2009,7 +2009,7 @@
           "shop": "Uber Eats",
           "rate": "4.5%",
           "scheme": "餐飲美食",
-          "keyword": "外送"
+          "keyword": "外送 咻_加碼"
         },
         {
           "shop": "foodpanda",
@@ -2201,7 +2201,7 @@
           "shop": "家樂福",
           "rate": "4.5%",
           "scheme": "生活採買",
-          "keyword": "家樂福"
+          "keyword": "咻_加碼"
         },
         {
           "shop": "屈臣氏",
@@ -2267,7 +2267,7 @@
           "shop": "蝦皮購物",
           "rate": "4.5%",
           "scheme": "電商平台",
-          "keyword": "蝦皮購物"
+          "keyword": "心_加碼"
         },
         {
           "shop": "淘寶網",
@@ -2291,7 +2291,7 @@
           "shop": "韓國(實體)",
           "rate": "4.5%",
           "scheme": "國外實體",
-          "keyword": "國外"
+          "keyword": "國外 咻_加碼"
         },
         {
           "shop": "泰國(實體)",
