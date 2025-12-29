@@ -3,7 +3,7 @@
     {
       "id": 0,
       "name": "台新 Richart",
-      "img": "",
+      "img": "http://xn--ritaishinbank-9d8vp16q.com.tw/TSB/export/sites/TSB/images/creditcard/R111.gif",
       "rules": [
         {
           "shop": "台新Pay",
@@ -988,7 +988,7 @@
     {
       "id": 1,
       "name": "國泰 Cube",
-      "img": "",
+      "img": "https://www.cathay-cube.com.tw/content/dam/cub-aem-cs/Image/Personal/product/credit-card/digicard/cube/V_signature.png",
       "rules": [
         {
           "shop": "Klook",
@@ -1811,7 +1811,7 @@
     {
       "id": 2,
       "name": "玉山 Unicard",
-      "img": "",
+      "img": "https://raw.githubusercontent.com/alanliao1001/cardcat_pro/refs/heads/main/mountain.webp",
       "rules": [
         {
           "shop": "玉山Wallet電子支付",
