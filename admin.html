@@ -1,7 +1,80 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>卡片貓 Pro - 後台管理</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #f8f9fa; padding-top: 20px; }
+        .card-preview { max-width: 100px; border-radius: 8px; }
+        .rule-item { display: flex; align-items: center; background: white; padding: 10px; border-radius: 5px; margin-bottom: 5px; border: 1px solid #dee2e6; }
+        .rule-text { flex-grow: 1; margin-left: 10px; }
+        #drop-area { border: 2px dashed #ccc; padding: 20px; text-align: center; cursor: pointer; }
+        #drop-area.highlight { border-color: #0d6efd; background-color: #e9ecef; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>🐱 卡片貓 Pro 管理後台</h1>
+        <button class="btn btn-primary" onclick="showAddCardModal()">➕ 新增卡片</button>
+    </div>
+
+    <div class="row" id="cardList"></div>
+</div>
+
+<div class="modal fade" id="cardModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalTitle">新增卡片</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="cardForm">
+                    <input type="hidden" id="editCardId">
+                    <div class="mb-3">
+                        <label class="form-label">卡片名稱</label>
+                        <input type="text" class="form-control" id="cardName" required placeholder="例如：台新 Richart">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">卡片圖片 (點擊或拖入圖片)</label>
+                        <div id="drop-area">
+                            <p>點擊上傳或將圖片拖曳至此</p>
+                            <input type="file" id="cardImgInput" accept="image/*" style="display:none">
+                            <img id="imgPreview" class="card-preview d-none">
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    <h5>規則管理</h5>
+                    <div class="input-group mb-3">
+                        <textarea class="form-control" id="ruleInput" placeholder="輸入規則（支援多行，每一行會存為一條規則）" rows="3"></textarea>
+                        <button class="btn btn-outline-secondary" type="button" id="addRuleBtn">新增/更新規則</button>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between mb-2">
+                        <small class="text-muted">勾選規則後可批次操作</small>
+                        <button type="button" class="btn btn-danger btn-sm" onclick="deleteSelectedRules()">刪除選中規則</button>
+                    </div>
+                    <div id="ruleList"></div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-success" onclick="saveCard()">確認儲存到 GitHub</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    // 【重要：請依照指示填寫】
-    const GITHUB_TOKEN = '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'; // 這裡請填入你的 Classic Token
-    const REPO_OWNER = 'alanliao1001'; 
+    // 請在此處填寫你的 GitHub 設定
+    const GITHUB_TOKEN = '你的_GITHUB_TOKEN';
+    const REPO_OWNER = '你的_帳號';
     const REPO_NAME = 'cardcat_pro';
     const FILE_PATH = 'data.json';
 
@@ -15,19 +88,19 @@
         fetchData();
         setupImageUpload();
         
+        // 監聽新增規則按鈕
         document.getElementById('addRuleBtn').addEventListener('click', () => {
             const input = document.getElementById('ruleInput').value.trim();
             if (!input) return;
 
             if (editingRuleIndex > -1) {
-                // 更新特定行
+                // 編輯模式
                 currentRules[editingRuleIndex] = input;
                 editingRuleIndex = -1;
                 document.getElementById('addRuleBtn').innerText = "新增/更新規則";
-                document.getElementById('addRuleBtn').className = "btn btn-outline-secondary";
             } else {
-                // 批次新增：將多行內容轉為陣列
-                const newRules = input.split(/\n+/).map(r => r.trim()).filter(r => r !== "");
+                // 快速新增模式：按換行分割
+                const newRules = input.split('\n').map(r => r.trim()).filter(r => r !== "");
                 currentRules = [...currentRules, ...newRules];
             }
             
@@ -36,100 +109,164 @@
         });
     });
 
-    // 取得資料庫內容 (加上快取清除機制防止讀到舊資料)
     async function fetchData() {
         try {
-            const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}?t=${Date.now()}`, {
+            const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}`, {
                 headers: { 'Authorization': `token ${GITHUB_TOKEN}` }
             });
-            if (!res.ok) throw new Error("讀取失敗");
             const file = await res.json();
             allData = JSON.parse(decodeURIComponent(escape(atob(file.content))));
             renderCards();
-        } catch (e) { console.error("Database initialization error:", e); }
+        } catch (e) { console.error("讀取失敗", e); }
     }
 
-    // 渲染規則清單 (優化渲染效能)
-    function renderRules() {
-        const list = document.getElementById('ruleList');
-        const html = currentRules.map((rule, index) => `
-            <div class="rule-item shadow-sm">
-                <input type="checkbox" class="rule-checkbox form-check-input" data-index="${index}">
-                <div class="rule-text text-break">${rule}</div>
-                <div class="btn-group border-start ms-2 ps-2">
-                    <button type="button" class="btn btn-sm btn-outline-info" onclick="prepareEditRule(${index})">編輯</button>
-                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeRule(${index})">✕</button>
+    function renderCards() {
+        const list = document.getElementById('cardList');
+        list.innerHTML = allData.cards.map(card => `
+            <div class="col-md-4 mb-3">
+                <div class="card shadow-sm">
+                    <div class="card-body text-center">
+                        <img src="${card.img}" class="card-preview mb-2">
+                        <h5>${card.name}</h5>
+                        <p class="small text-muted">${card.rules.length} 條規則</p>
+                        <button class="btn btn-sm btn-outline-primary" onclick="editCard('${card.id}')">編輯</button>
+                        <button class="btn btn-sm btn-outline-danger" onclick="deleteCard('${card.id}')">刪除</button>
+                    </div>
                 </div>
             </div>
         `).join('');
-        list.innerHTML = html;
     }
 
-    // 準備編輯特定規則
+    function showAddCardModal() {
+        document.getElementById('modalTitle').innerText = "新增卡片";
+        document.getElementById('editCardId').value = "";
+        document.getElementById('cardName').value = "";
+        document.getElementById('imgPreview').src = "";
+        document.getElementById('imgPreview').classList.add('d-none');
+        currentRules = [];
+        renderRules();
+        cardModal.show();
+    }
+
+    function editCard(id) {
+        const card = allData.cards.find(c => c.id === id);
+        if (!card) return;
+        document.getElementById('modalTitle').innerText = "編輯卡片";
+        document.getElementById('editCardId').value = card.id;
+        document.getElementById('cardName').value = card.name;
+        document.getElementById('imgPreview').src = card.img;
+        document.getElementById('imgPreview').classList.remove('d-none');
+        currentRules = [...card.rules];
+        renderRules();
+        cardModal.show();
+    }
+
+    function renderRules() {
+        const list = document.getElementById('ruleList');
+        list.innerHTML = currentRules.map((rule, index) => `
+            <div class="rule-item">
+                <input type="checkbox" class="rule-checkbox" data-index="${index}">
+                <div class="rule-text">${rule}</div>
+                <button type="button" class="btn btn-sm btn-link" onclick="prepareEditRule(${index})">編輯</button>
+                <button type="button" class="btn btn-sm text-danger" onclick="removeRule(${index})">✕</button>
+            </div>
+        `).join('');
+    }
+
     function prepareEditRule(index) {
         editingRuleIndex = index;
         document.getElementById('ruleInput').value = currentRules[index];
-        document.getElementById('addRuleBtn').innerText = "確認修改此行";
-        document.getElementById('addRuleBtn').className = "btn btn-warning text-dark";
+        document.getElementById('addRuleBtn').innerText = "更新該行規則";
         document.getElementById('ruleInput').focus();
     }
 
-    // 刪除選中的規則
+    function removeRule(index) {
+        currentRules.splice(index, 1);
+        renderRules();
+    }
+
     function deleteSelectedRules() {
         const checkboxes = document.querySelectorAll('.rule-checkbox:checked');
-        if (checkboxes.length === 0) return alert("請先勾選規則");
-        
         const indexesToDelete = Array.from(checkboxes).map(cb => parseInt(cb.dataset.index));
-        // 由大到小刪除，才不會影響 index
         currentRules = currentRules.filter((_, index) => !indexesToDelete.includes(index));
         renderRules();
     }
 
-    // 核心數據同步 (Debug 關鍵：先 Get SHA 再 Put)
-    async function updateGitHub() {
-        const btn = event.target;
-        btn.disabled = true;
-        btn.innerText = "同步中...";
+    async function saveCard() {
+        const id = document.getElementById('editCardId').value || 'c' + Date.now();
+        const name = document.getElementById('cardName').value;
+        const img = document.getElementById('imgPreview').src;
 
+        if (!name || !img) return alert("請填寫名稱並上傳圖片");
+
+        const newCard = { id, name, img, rules: currentRules };
+        const index = allData.cards.findIndex(c => c.id === id);
+
+        if (index > -1) allData.cards[index] = newCard;
+        else allData.cards.push(newCard);
+
+        await updateGitHub();
+    }
+
+    async function deleteCard(id) {
+        if (!confirm("確定要刪除這張卡片嗎？")) return;
+        allData.cards = allData.cards.filter(c => c.id !== id);
+        await updateGitHub();
+    }
+
+    async function updateGitHub() {
+        const content = btoa(unescape(encodeURIComponent(JSON.stringify(allData, null, 2))));
         try {
-            // 1. 先獲取最新的 SHA (避免 409 Conflict)
-            const getRes = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}`, {
+            const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}`, {
                 headers: { 'Authorization': `token ${GITHUB_TOKEN}` }
             });
-            const fileData = await getRes.json();
-            const currentSha = fileData.sha;
-
-            // 2. 準備 Base64 資料
-            const content = btoa(unescape(encodeURIComponent(JSON.stringify(allData, null, 2))));
+            const file = await res.json();
             
-            // 3. 寫入
-            const putRes = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}`, {
+            await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}`, {
                 method: 'PUT',
-                headers: { 
-                    'Authorization': `token ${GITHUB_TOKEN}`,
-                    'Content-Type': 'application/json'
-                },
+                headers: { 'Authorization': `token ${GITHUB_TOKEN}`, 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    message: `Admin Update: ${new Date().toLocaleString()}`,
+                    message: "Update cards data",
                     content: content,
-                    sha: currentSha
+                    sha: file.sha
                 })
             });
+            alert("同步成功！");
+            cardModal.hide();
+            fetchData();
+        } catch (e) { alert("更新失敗，請檢查 Token"); }
+    }
 
-            if (putRes.ok) {
-                alert("卡片貓 Pro 雲端資料同步完畢！");
-                cardModal.hide();
-                fetchData();
-            } else {
-                throw new Error("GitHub API 回報錯誤");
-            }
-        } catch (e) {
-            alert("同步失敗！請確認您的 GITHUB_TOKEN 是否正確。");
-        } finally {
-            btn.disabled = false;
-            btn.innerText = "確認儲存到 GitHub";
+    // 圖片上傳邏輯
+    function setupImageUpload() {
+        const dropArea = document.getElementById('drop-area');
+        const input = document.getElementById('cardImgInput');
+        const preview = document.getElementById('imgPreview');
+
+        dropArea.onclick = () => input.click();
+        input.onchange = (e) => handleFile(e.target.files[0]);
+
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(name => {
+            dropArea.addEventListener(name, (e) => {
+                e.preventDefault();
+                if (name === 'dragover') dropArea.classList.add('highlight');
+                else if (name === 'drop') {
+                    dropArea.classList.remove('highlight');
+                    handleFile(e.dataTransfer.files[0]);
+                } else dropArea.classList.remove('highlight');
+            });
+        });
+
+        function handleFile(file) {
+            if (!file) return;
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => {
+                preview.src = reader.result;
+                preview.classList.remove('d-none');
+            };
         }
     }
-    
-    // ... 其餘渲染與圖片上傳邏輯保持不變 ...
 </script>
+</body>
+</html>
